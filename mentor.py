@@ -30,7 +30,7 @@ def _generate_content_with_fallback(client, contents, config=None):
         
     last_error = None
     for model_name in models_to_try:
-        print(f"Trying Gemini model: {model_name}")
+        print("TRYING MODEL:", model_name)
         try:
             if config:
                 response = client.models.generate_content(
@@ -46,8 +46,10 @@ def _generate_content_with_fallback(client, contents, config=None):
             _WORKING_GEMINI_MODEL = model_name
             return response
         except Exception as e:
-            print(f"Failed model: {model_name}")
-            print(e)
+            print("=" * 60)
+            print("MODEL FAILED:", model_name)
+            print("ERROR:", e)
+            print("=" * 60)
             last_error = e
             continue
             
