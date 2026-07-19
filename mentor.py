@@ -5,6 +5,7 @@
 # ==================================================
 import os
 import json
+import traceback
 from collections import Counter
 from google import genai
 from google.genai import types
@@ -30,7 +31,7 @@ def _generate_content_with_fallback(client, contents, config=None):
         
     last_error = None
     for model_name in models_to_try:
-        print("TRYING MODEL:", model_name)
+        print("Trying model:", model_name)
         try:
             if config:
                 response = client.models.generate_content(
@@ -46,10 +47,8 @@ def _generate_content_with_fallback(client, contents, config=None):
             _WORKING_GEMINI_MODEL = model_name
             return response
         except Exception as e:
-            print("=" * 60)
-            print("MODEL FAILED:", model_name)
-            print("ERROR:", e)
-            print("=" * 60)
+            print("Failed model:", model_name)
+            print(repr(e))
             last_error = e
             continue
             
@@ -586,4 +585,9 @@ def perform_mentor_chat(user_id, message_history, user_message, image_filename=N
         )
         return response.text.strip()
     except Exception as e:
-        return f"Could not reach my mentoring core: {str(e)}. Check your connection."
+        print("=" * 80)
+        print("GEMINI ERROR")
+        print(repr(e))
+        traceback.print_exc()
+        print("=" * 80)
+        return f"Could not reach my mentoring core: {e}"
