@@ -13,6 +13,45 @@ from journal import get_all_trades
 from statistics import statistics_summary
 
 
+_WORKING_GEMINI_MODEL = None
+
+def _generate_content_with_fallback(client, contents, config=None):
+    global _WORKING_GEMINI_MODEL
+    
+    models_to_try = [
+        "gemini-2.5-flash-lite",
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite"
+    ]
+    
+    if _WORKING_GEMINI_MODEL and _WORKING_GEMINI_MODEL in models_to_try:
+        models_to_try.remove(_WORKING_GEMINI_MODEL)
+        models_to_try.insert(0, _WORKING_GEMINI_MODEL)
+        
+    last_error = None
+    for model_name in models_to_try:
+        try:
+            if config:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=contents,
+                    config=config
+                )
+            else:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=contents
+                )
+            _WORKING_GEMINI_MODEL = model_name
+            return response
+        except Exception as e:
+            last_error = e
+            continue
+            
+    raise Exception(f"All models failed. Last error: {last_error}")
+
+
 # ==================================================
 # UNIVERSAL TRADING SETUP (UTS) — FRAMEWORK RULES
 # The AI Mentor uses these rules as its PRIMARY
@@ -320,10 +359,7 @@ def perform_mentor_audit(user_id):
         
         try:
             client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt
-            )
+            response = _generate_content_with_fallback(client, prompt)
             text = response.text.strip()
             # Clean Markdown wrappers if present
             if "```json" in text:
@@ -539,12 +575,10 @@ def perform_mentor_chat(user_id, message_history, user_message, image_filename=N
 
     try:
         client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=sdk_contents,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction
-            )
+        response = _generate_content_with_fallback(
+            client, 
+            sdk_contents, 
+            config=types.GenerateContentConfig(system_instruction=system_instruction)
         )
         return response.text.strip()
     except Exception as e:
