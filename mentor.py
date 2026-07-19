@@ -53,6 +53,13 @@ def _generate_content_with_fallback(client, contents, config=None):
             last_error = e
             continue
             
+    try:
+        print("FETCHING AVAILABLE MODELS...")
+        models_list = [m.name for m in client.models.list()]
+        print("AVAILABLE MODELS:", models_list)
+    except Exception as list_e:
+        print("Failed to list models:", list_e)
+        
     raise Exception(f"All models failed. Last error: {last_error}")
 
 
