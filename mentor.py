@@ -21,8 +21,9 @@ def _generate_content_with_fallback(client, contents, config=None):
     global _WORKING_GEMINI_MODEL
     
     models_to_try = [
-        "gemini-2.5-flash-lite",
-        "gemini-2.5-flash"
+        "gemini-2.0-flash",
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-8b"
     ]
     
     if _WORKING_GEMINI_MODEL and _WORKING_GEMINI_MODEL in models_to_try:
