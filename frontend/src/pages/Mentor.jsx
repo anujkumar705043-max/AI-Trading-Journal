@@ -207,7 +207,13 @@ export default function Mentor() {
       },
       body: JSON.stringify(payload)
     })
-      .then(res => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(errText || 'Failed to save trade');
+        }
+        return res.json();
+      })
       .then(() => {
         // Reset Form
         setFormData({
@@ -233,7 +239,10 @@ export default function Mentor() {
         fetchMentorAudit()
         alert('Trade logged successfully for self-audit!')
       })
-      .catch(err => console.error(err))
+      .catch(err => {
+        console.error(err);
+        alert('Error saving trade: ' + err.message);
+      })
   }
 
   if (loading) return (
@@ -577,7 +586,7 @@ export default function Mentor() {
               
               <div className="input-group">
                 <label>Ticker Symbol</label>
-                <input type="text" className="input-field" name="symbol" value={formData.symbol} onChange={handleFormChange} required placeholder="e.g. BTCUSD" />
+                <input type="text" className="input-field" name="symbol" value={formData.symbol} onChange={handleFormChange} placeholder="e.g. BTCUSD" />
               </div>
 
               <div className="input-group">
@@ -590,37 +599,37 @@ export default function Mentor() {
 
               <div className="input-group">
                 <label>Execution Date</label>
-                <input type="date" className="input-field" name="trade_date" value={formData.trade_date} onChange={handleFormChange} required />
+                <input type="date" className="input-field" name="trade_date" value={formData.trade_date} onChange={handleFormChange} />
               </div>
 
               <div className="input-group">
                 <label>Entry Price</label>
-                <input type="number" step="any" className="input-field" name="entry" value={formData.entry} onChange={handleFormChange} required placeholder="0.00" />
+                <input type="number" step="any" className="input-field" name="entry" value={formData.entry} onChange={handleFormChange} placeholder="0.00" />
               </div>
 
               <div className="input-group">
                 <label>Position Size (Qty)</label>
-                <input type="number" step="any" className="input-field" name="quantity" value={formData.quantity} onChange={handleFormChange} required placeholder="0" />
+                <input type="number" step="any" className="input-field" name="quantity" value={formData.quantity} onChange={handleFormChange} placeholder="0" />
               </div>
 
               <div className="input-group">
                 <label>Stop Loss Level</label>
-                <input type="number" step="any" className="input-field" name="stop_loss" value={formData.stop_loss} onChange={handleFormChange} required placeholder="0.00" />
+                <input type="number" step="any" className="input-field" name="stop_loss" value={formData.stop_loss} onChange={handleFormChange} placeholder="0.00" />
               </div>
 
               <div className="input-group">
                 <label>Take Profit Target</label>
-                <input type="number" step="any" className="input-field" name="target" value={formData.target} onChange={handleFormChange} required placeholder="0.00" />
+                <input type="number" step="any" className="input-field" name="target" value={formData.target} onChange={handleFormChange} placeholder="0.00" />
               </div>
 
               <div className="input-group">
                 <label>Account Capital</label>
-                <input type="number" step="any" className="input-field" name="capital" value={formData.capital} onChange={handleFormChange} required placeholder="$0.00" />
+                <input type="number" step="any" className="input-field" name="capital" value={formData.capital} onChange={handleFormChange} placeholder="$0.00" />
               </div>
 
               <div className="input-group">
                 <label>Risk Percentage (%)</label>
-                <input type="number" step="any" className="input-field" name="risk_percent" value={formData.risk_percent} onChange={handleFormChange} required placeholder="1.0" />
+                <input type="number" step="any" className="input-field" name="risk_percent" value={formData.risk_percent} onChange={handleFormChange} placeholder="1.0" />
               </div>
 
               {/* Setups selector */}
