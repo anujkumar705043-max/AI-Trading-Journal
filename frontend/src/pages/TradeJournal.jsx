@@ -20,7 +20,7 @@ export default function TradeJournal() {
   const handleSyncExchanges = () => {
     setSyncing(true)
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/exchanges/sync', { 
+    fetch('https://ai-trading-journal-m373.onrender.com/exchanges/sync', { 
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -40,7 +40,7 @@ export default function TradeJournal() {
   const fetchTrades = () => {
     setLoading(true)
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/trades', {
+    fetch('https://ai-trading-journal-m373.onrender.com/trades', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -62,7 +62,7 @@ export default function TradeJournal() {
     }
     setLoading(true)
     const token = localStorage.getItem('token')
-    fetch(`http://localhost:8000/trade/search/${searchQuery}`, {
+    fetch(`https://ai-trading-journal-m373.onrender.com/trade/search/${searchQuery}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => {
@@ -86,7 +86,7 @@ export default function TradeJournal() {
   const handleDelete = (id) => {
     if (confirm('Are you sure you want to delete this trade?')) {
       const token = localStorage.getItem('token')
-      fetch(`http://localhost:8000/trade/delete/${id}`, { 
+      fetch(`https://ai-trading-journal-m373.onrender.com/trade/delete/${id}`, { 
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       })
@@ -116,7 +116,7 @@ export default function TradeJournal() {
       : (exitVal - entryVal) * qtyVal
 
     const token = localStorage.getItem('token')
-    fetch(`http://localhost:8000/trade/update/${editingTrade.id}`, {
+    fetch(`https://ai-trading-journal-m373.onrender.com/trade/update/${editingTrade.id}`, {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json',
@@ -260,7 +260,7 @@ export default function TradeJournal() {
                       onClick={() => setLightboxImage(trade.screenshot)}
                       style={{ width: '48px', height: '32px', borderRadius: '6px', overflow: 'hidden', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
-                      <img src={`http://localhost:8000/uploads/${trade.screenshot}`} alt="Chart Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={`https://ai-trading-journal-m373.onrender.com/uploads/${trade.screenshot}`} alt="Chart Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   ) : (
                     <span style={{ color: 'var(--text-secondary)' }}>-</span>
@@ -378,7 +378,7 @@ export default function TradeJournal() {
             <X size={32} />
           </button>
           <img 
-            src={`http://localhost:8000/uploads/${lightboxImage}`} 
+            src={`https://ai-trading-journal-m373.onrender.com/uploads/${lightboxImage}`} 
             alt="Screenshot Lightbox" 
             style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }} 
             onClick={e => e.stopPropagation()} 

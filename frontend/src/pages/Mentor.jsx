@@ -49,7 +49,7 @@ export default function Mentor() {
     setError(null)
     const token = localStorage.getItem('token')
 
-    fetch('http://localhost:8000/mentor/insights', {
+    fetch('https://ai-trading-journal-m373.onrender.com/mentor/insights', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => {
@@ -77,7 +77,7 @@ export default function Mentor() {
   // Load setups on load
   const fetchSetups = () => {
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/setups', {
+    fetch('https://ai-trading-journal-m373.onrender.com/setups', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -87,7 +87,7 @@ export default function Mentor() {
 
   const fetchMentorConfig = () => {
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/mentor/config', {
+    fetch('https://ai-trading-journal-m373.onrender.com/mentor/config', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -122,7 +122,7 @@ export default function Mentor() {
       history: messages.map(m => ({ sender: m.sender, text: m.text }))
     }
 
-    fetch('http://localhost:8000/mentor/chat', {
+    fetch('https://ai-trading-journal-m373.onrender.com/mentor/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ export default function Mentor() {
     const data = new FormData()
     data.append('file', file)
 
-    fetch('http://localhost:8000/trade/upload-screenshot', {
+    fetch('https://ai-trading-journal-m373.onrender.com/trade/upload-screenshot', {
       method: 'POST',
       body: data
     })
@@ -199,7 +199,7 @@ export default function Mentor() {
     }
 
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/trade/add', {
+    fetch('https://ai-trading-journal-m373.onrender.com/trade/add', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',

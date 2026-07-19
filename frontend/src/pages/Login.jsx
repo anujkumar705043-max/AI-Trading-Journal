@@ -20,7 +20,7 @@ export default function Login({ onLoginSuccess }) {
 
     const endpoint = isRegister ? '/auth/register' : '/auth/login'
 
-    fetch(`http://localhost:8000${endpoint}`, {
+    fetch(`https://ai-trading-journal-m373.onrender.com${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })

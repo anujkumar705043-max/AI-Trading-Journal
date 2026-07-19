@@ -36,7 +36,7 @@ export default function Settings() {
     setLoading(true)
     const token = localStorage.getItem('token')
     
-    fetch('http://localhost:8000/exchanges/credentials', {
+    fetch('https://ai-trading-journal-m373.onrender.com/exchanges/credentials', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -67,7 +67,7 @@ export default function Settings() {
 
   const fetchMentorConfig = () => {
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/mentor/config', {
+    fetch('https://ai-trading-journal-m373.onrender.com/mentor/config', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -80,7 +80,7 @@ export default function Settings() {
   const saveMentorConfig = () => {
     const token = localStorage.getItem('token')
     setMentorSaving(true)
-    fetch('http://localhost:8000/mentor/config', {
+    fetch('https://ai-trading-journal-m373.onrender.com/mentor/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(mentorCfg)
@@ -108,7 +108,7 @@ export default function Settings() {
       passphrase: activeForm[exchangeName].passphrase || 'empty'
     }
 
-    fetch('http://localhost:8000/exchanges/credentials', {
+    fetch('https://ai-trading-journal-m373.onrender.com/exchanges/credentials', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export default function Settings() {
   const handleDelete = (exchangeName) => {
     const token = localStorage.getItem('token')
     if (confirm(`Are you sure you want to delete your ${exchangeName.replace('_', ' ').toUpperCase()} credentials?`)) {
-      fetch(`http://localhost:8000/exchanges/credentials/${exchangeName}`, { 
+      fetch(`https://ai-trading-journal-m373.onrender.com/exchanges/credentials/${exchangeName}`, { 
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       })

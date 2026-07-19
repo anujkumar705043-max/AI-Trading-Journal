@@ -86,7 +86,7 @@ export default function LiveCharts() {
   // Fetch simulated wallet and active positions
   const fetchAccount = () => {
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/paper/account', {
+    fetch('https://ai-trading-journal-m373.onrender.com/paper/account', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -216,7 +216,7 @@ export default function LiveCharts() {
     }
 
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/paper/order', {
+    fetch('https://ai-trading-journal-m373.onrender.com/paper/order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -240,7 +240,7 @@ export default function LiveCharts() {
   // Close position
   const handleClosePosition = (id) => {
     const token = localStorage.getItem('token')
-    fetch(`http://localhost:8000/paper/close/${id}`, {
+    fetch(`https://ai-trading-journal-m373.onrender.com/paper/close/${id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -259,7 +259,7 @@ export default function LiveCharts() {
   const handleResetWallet = () => {
     if (confirm('Reset your simulated balance back to $10,000.00 and close all open positions?')) {
       const token = localStorage.getItem('token')
-      fetch('http://localhost:8000/paper/reset', {
+      fetch('https://ai-trading-journal-m373.onrender.com/paper/reset', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       })

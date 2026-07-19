@@ -6,7 +6,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem('token')
-    fetch('http://localhost:8000/statistics', {
+    fetch('https://ai-trading-journal-m373.onrender.com/statistics', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
