@@ -5,6 +5,6 @@ requests
 python-multipart
 pyjwt
 bcrypt
-
+google-genai
 
 

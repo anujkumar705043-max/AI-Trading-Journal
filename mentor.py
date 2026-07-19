@@ -3,10 +3,11 @@
 # mentor.py
 # AI Mentor Evaluation and Rule Audit Engine (Gemini LLM Integrated)
 # ==================================================
-
+import os
 import json
-import requests
 from collections import Counter
+from google import genai
+from google.genai import types
 from database import get_connection, fetch_one
 from journal import get_all_trades
 from statistics import statistics_summary
@@ -270,13 +271,10 @@ def perform_mentor_audit(user_id):
     expectancy = (win_rate / 100 * avg_win) - ((100 - win_rate) / 100 * avg_loss)
     overall_compliance = (followed_checks / total_checks * 100) if total_checks > 0 else 100
 
-    # 6. Retrieve Gemini Key if configured
-    gemini_cred = fetch_one("SELECT api_key FROM exchange_credentials WHERE user_id = ? AND exchange_name = 'gemini_api'", (user_id,))
+    # 6. Retrieve Gemini Key from server environment
+    api_key = os.getenv("GEMINI_API_KEY")
     
-    if gemini_cred and gemini_cred["api_key"] and gemini_cred["api_key"] != "mock":
-        api_key = gemini_cred["api_key"]
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-        
+    if api_key:
         prompt = f"""
         You are {mentor_name}, a custom AI Trading Mentor. 
         Your avatar style is {avatar_emoji}.
@@ -321,40 +319,35 @@ def perform_mentor_audit(user_id):
         """
         
         try:
-            payload = {
-                "contents": [{
-                    "parts": [{
-                        "text": prompt
-                    }]
-                }]
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            text = response.text.strip()
+            # Clean Markdown wrappers if present
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            elif "```" in text:
+                text = text.split("```")[1].split("```")[0].strip()
+            
+            parsed = json.loads(text)
+            return {
+                "status": "success",
+                "username": username,
+                "mentor_name": mentor_name,
+                "avatar_emoji": avatar_emoji,
+                "mentor_grade": parsed["mentor_grade"],
+                "mentor_grade_desc": parsed["mentor_grade_desc"],
+                "mentor_speech": parsed["mentor_speech"],
+                "expectancy": round(expectancy, 2),
+                "avg_risk_percent": round(avg_risk, 2),
+                "compliance_insights": compliance_insights,
+                "weekly_plan": parsed["weekly_plan"]
             }
-            res = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=10)
-            if res.status_code == 200:
-                result_data = res.json()
-                text = result_data["candidates"][0]["content"]["parts"][0]["text"].strip()
-                # Clean Markdown wrappers
-                if "```json" in text:
-                    text = text.split("```json")[1].split("```")[0].strip()
-                elif "```" in text:
-                    text = text.split("```")[1].split("```")[0].strip()
-                
-                parsed = json.loads(text)
-                return {
-                    "status": "success",
-                    "username": username,
-                    "mentor_name": mentor_name,
-                    "avatar_emoji": avatar_emoji,
-                    "mentor_grade": parsed["mentor_grade"],
-                    "mentor_grade_desc": parsed["mentor_grade_desc"],
-                    "mentor_speech": parsed["mentor_speech"],
-                    "expectancy": round(expectancy, 2),
-                    "avg_risk_percent": round(avg_risk, 2),
-                    "compliance_insights": compliance_insights,
-                    "weekly_plan": parsed["weekly_plan"]
-                }
         except Exception as e:
             # Fall back to local evaluation if LLM fails
-            print(f"Gemini API Error: {str(e)}")
+            print(f"Gemini SDK Error (audit): {str(e)}")
             pass
 
     # ============================================
@@ -443,13 +436,10 @@ def perform_mentor_chat(user_id, message_history, user_message):
     user_info = fetch_one("SELECT email FROM users WHERE id = ?", (user_id,))
     username = user_info["email"].split("@")[0].capitalize() if user_info else "Trader"
     
-    gemini_cred = fetch_one("SELECT api_key FROM exchange_credentials WHERE user_id = ? AND exchange_name = 'gemini_api'", (user_id,))
+    api_key = os.getenv("GEMINI_API_KEY")
     
-    if not gemini_cred or not gemini_cred["api_key"] or gemini_cred["api_key"] == "mock":
-        return "Hello! I am your AI Trading Mentor. Please configure your Gemini API Key in the Settings page to enable live interactive conversations with me!"
-        
-    api_key = gemini_cred["api_key"]
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    if not api_key:
+        return "Gemini API Key not found in server environment. Please contact the administrator."
     
     # Fetch custom AI mentor profile
     mentor_cfg = fetch_one("SELECT mentor_name, avatar_emoji, personality, custom_rules FROM custom_mentor_config WHERE user_id = ?", (user_id,))
@@ -470,8 +460,8 @@ def perform_mentor_chat(user_id, message_history, user_message):
         trade_logs.append(
             f"Date: {t['trade_date']}, Symbol: {t['symbol']}, Type: {t['trade_type']}, Entry: {t['entry']}, Exit: {t['exit']}, P&L: {t['profit_loss']}, Notes: {t['notes']}"
         )
-        
-    system_context = f"""
+
+    system_instruction = f"""
     You are {mentor_name}, a custom AI Trading Mentor.
     Your avatar is {avatar_emoji}.
     Your personality guidelines: You are {personality_desc}. You must adopt these traits in your writing style.
@@ -497,30 +487,24 @@ def perform_mentor_chat(user_id, message_history, user_message):
     
     Answer the trader's questions in first-person as {mentor_name}. Reference UTS rules by name when relevant (e.g. "According to the UTS sweep rule...", "The UTS trap candle requires a minimum 1:3 wick-to-body ratio..."). Keep answers concise, specific to their data, and direct.
     """
-    
-    # Compile prompt content
-    prompt_contents = []
-    # Add system context
-    prompt_contents.append({"role": "user", "parts": [{"text": system_context}]})
-    prompt_contents.append({"role": "model", "parts": [{"text": f"Understood. I will act as their Custom AI Mentor, {mentor_name}."}]})
-    
-    # Add recent message history
+
+    # Build multi-turn conversation contents for SDK
+    sdk_contents = []
     for msg in message_history[-10:]:
         role = "user" if msg["sender"] == "user" else "model"
-        prompt_contents.append({"role": role, "parts": [{"text": msg["text"]}]})
-        
-    # Add latest message
-    prompt_contents.append({"role": "user", "parts": [{"text": user_message}]})
-    
+        sdk_contents.append(types.Content(role=role, parts=[types.Part(text=msg["text"])]))
+    # Add the latest user message
+    sdk_contents.append(types.Content(role="user", parts=[types.Part(text=user_message)]))
+
     try:
-        payload = {
-            "contents": prompt_contents
-        }
-        res = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=12)
-        if res.status_code == 200:
-            result_data = res.json()
-            return result_data["candidates"][0]["content"]["parts"][0]["text"].strip()
-        else:
-            return "I received an error from the AI services. Please verify your Gemini API Key format in Settings."
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=sdk_contents,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction
+            )
+        )
+        return response.text.strip()
     except Exception as e:
         return f"Could not reach my mentoring core: {str(e)}. Check your connection."
