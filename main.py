@@ -225,10 +225,10 @@ def position_size(data: PositionInput):
 # Scoped Trade Management Routes
 # ============================================
 
-@app.post("/trade/upload-screenshot")
-def upload_screenshot(file: UploadFile = File(...)):
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed.")
+@app.post("/trade/upload-media")
+def upload_media(file: UploadFile = File(...)):
+    if not (file.content_type.startswith("image/") or file.content_type.startswith("audio/")):
+        raise HTTPException(status_code=400, detail="Invalid file type. Only images and audio are allowed.")
 
     ext = os.path.splitext(file.filename)[1]
     unique_name = f"{uuid.uuid4()}{ext}"
@@ -628,11 +628,13 @@ def reset_paper_wallet(current_user: dict = Depends(get_current_user)):
 class MentorChatInput(BaseModel):
     message: str
     history: List[dict] = []
+    image_filename: Optional[str] = None
+    audio_filename: Optional[str] = None
 
 
 @app.post("/mentor/chat")
 def mentor_chat(data: MentorChatInput, current_user: dict = Depends(get_current_user)):
-    reply = perform_mentor_chat(current_user["id"], data.history, data.message)
+    reply = perform_mentor_chat(current_user["id"], data.history, data.message, data.image_filename, data.audio_filename)
     return {
         "reply": reply
     }

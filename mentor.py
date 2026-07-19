@@ -425,9 +425,9 @@ def perform_mentor_audit(user_id):
     }
 
 
-def perform_mentor_chat(user_id, message_history, user_message):
+def perform_mentor_chat(user_id, message_history, user_message, image_filename=None, audio_filename=None):
     """
-    Sends the user's message along with trading history context to Google Gemini
+    Sends the user's message (and optional image/audio) along with trading history context to Google Gemini
     to get a conversational mentor reply.
     """
     trades = get_all_trades(user_id)
@@ -467,6 +467,7 @@ def perform_mentor_chat(user_id, message_history, user_message):
     Your personality guidelines: You are {personality_desc}. You must adopt these traits in your writing style.
 
     CRITICAL INSTRUCTION: You are trained on the Universal Trading Setup (UTS) framework. This is the trader's PRIMARY trading methodology. Every answer you give must be grounded in UTS rules. When you analyse a trade, check it against UTS. When you give advice, frame it using UTS concepts (sweep, trap candle, order block, liquidity phase, Big Player vs Retailer). Never contradict UTS rules. If the trader asks about any trading concept, explain it from the UTS perspective first.
+    If the user uploads an image/screenshot, carefully analyze it according to the UTS rules. Look for support/resistance sweeps, trap candles, and order blocks. Point out any valid setups or mistakes directly from the visual evidence.
 
     === UTS FRAMEWORK (your complete knowledge base) ===
     {UTS_FRAMEWORK}
@@ -492,9 +493,49 @@ def perform_mentor_chat(user_id, message_history, user_message):
     sdk_contents = []
     for msg in message_history[-10:]:
         role = "user" if msg["sender"] == "user" else "model"
-        sdk_contents.append(types.Content(role=role, parts=[types.Part(text=msg["text"])]))
+        sdk_contents.append(types.Content(role=role, parts=[types.Part.from_text(text=msg["text"])]))
+    
+    # Prepare the latest user message parts
+    user_parts = [types.Part.from_text(text=user_message)]
+    
+    # Attach image if provided
+    if image_filename:
+        image_path = os.path.join("uploads", image_filename)
+        if os.path.exists(image_path):
+            try:
+                with open(image_path, "rb") as f:
+                    img_bytes = f.read()
+                ext = os.path.splitext(image_filename)[1].lower()
+                mime_type = "image/jpeg"
+                if ext == ".png":
+                    mime_type = "image/png"
+                elif ext in [".webp"]:
+                    mime_type = "image/webp"
+                
+                user_parts.append(types.Part.from_bytes(data=img_bytes, mime_type=mime_type))
+            except Exception as e:
+                print(f"Error loading image {image_path}: {e}")
+
+    # Attach audio if provided
+    if audio_filename:
+        audio_path = os.path.join("uploads", audio_filename)
+        if os.path.exists(audio_path):
+            try:
+                with open(audio_path, "rb") as f:
+                    audio_bytes = f.read()
+                ext = os.path.splitext(audio_filename)[1].lower()
+                mime_type = "audio/webm"
+                if ext in [".wav"]:
+                    mime_type = "audio/wav"
+                elif ext in [".mp3"]:
+                    mime_type = "audio/mpeg"
+                
+                user_parts.append(types.Part.from_bytes(data=audio_bytes, mime_type=mime_type))
+            except Exception as e:
+                print(f"Error loading audio {audio_path}: {e}")
+
     # Add the latest user message
-    sdk_contents.append(types.Content(role="user", parts=[types.Part(text=user_message)]))
+    sdk_contents.append(types.Content(role="user", parts=user_parts))
 
     try:
         client = genai.Client(api_key=api_key)
