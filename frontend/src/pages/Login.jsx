@@ -1,12 +1,17 @@
 import { useState } from 'react'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { BrainCircuit, Key, Mail, Sparkles } from 'lucide-react'
 
-export default function Login({ onLoginSuccess }) {
+export default function Login() {
   const [isRegister, setIsRegister] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState({ text: '', isError: false })
+
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const nextPath = searchParams.get('next') || '/dashboard'
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -34,12 +39,13 @@ export default function Login({ onLoginSuccess }) {
       .then(data => {
         setLoading(false)
         if (isRegister) {
-          setMsg({ text: 'Registration successful! You can now log in.', isError: false })
+          setMsg({ text: 'Registration successful! Abhi login karo.', isError: false })
           setIsRegister(false)
           setPassword('')
         } else {
           localStorage.setItem('token', data.access_token)
-          onLoginSuccess(data.access_token)
+          // Redirect to ?next= path or dashboard
+          navigate(nextPath, { replace: true })
         }
       })
       .catch(err => {
@@ -63,6 +69,19 @@ export default function Login({ onLoginSuccess }) {
       zIndex: 9999,
       overflow: 'hidden'
     }}>
+      {/* Back to Home link */}
+      <Link to="/" style={{
+        position: 'absolute', top: '24px', left: '24px',
+        textDecoration: 'none', color: 'rgba(255,255,255,0.4)',
+        fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '6px',
+        transition: 'color 0.2s ease',
+      }}
+        onMouseEnter={e => e.target.style.color = 'white'}
+        onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}
+      >
+        ← Home
+      </Link>
+
       <div className="glass-panel animate-fade-in" style={{
         width: '100%',
         maxWidth: '420px',
@@ -90,7 +109,7 @@ export default function Login({ onLoginSuccess }) {
             {isRegister ? 'Create Account' : 'Welcome Back'}
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: 0 }}>
-            {isRegister ? 'Start your AI-powered SaaS Journal' : 'Login to access your trading audits'}
+            {isRegister ? 'Start your AI-powered Trading Journal' : 'Login to access your trading dashboard'}
           </p>
         </div>
 
