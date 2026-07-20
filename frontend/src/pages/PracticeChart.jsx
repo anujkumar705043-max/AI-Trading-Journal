@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Send, Image as ImageIcon, X, Mic, Square, Maximize, Minimize, Bot, Search, Brush } from 'lucide-react'
+import { Send, Image as ImageIcon, X, Mic, Square, Maximize, Minimize, Bot, Search, Brush, Download } from 'lucide-react'
 
 export default function PracticeChart() {
   const container = useRef()
@@ -389,8 +389,20 @@ export default function PracticeChart() {
                   <div key={idx} style={{ alignSelf: isMentor ? 'flex-start' : 'flex-end', maxWidth: '85%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     
                     {msg.imagePreview && (
-                      <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      <div 
+                        style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}
+                        onMouseEnter={(e) => { e.currentTarget.querySelector('.img-overlay').style.opacity = '1' }}
+                        onMouseLeave={(e) => { e.currentTarget.querySelector('.img-overlay').style.opacity = '0' }}
+                      >
                         <img src={msg.imagePreview} alt="Upload" style={{ width: '100%', display: 'block' }} />
+                        <div className="img-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', opacity: 0, transition: 'opacity 0.2s ease', backdropFilter: 'blur(2px)' }}>
+                          <button onClick={() => window.open(msg.imagePreview, '_blank')} style={{ background: 'var(--accent-color)', border: 'none', color: 'white', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s' }} title="View Full Screen" onMouseEnter={e => e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={e => e.currentTarget.style.transform='scale(1)'}>
+                            <Maximize size={16} />
+                          </button>
+                          <a href={msg.imagePreview} download={`chart_${idx}.png`} target="_blank" style={{ background: 'var(--accent-color)', border: 'none', color: 'white', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', transition: 'transform 0.2s' }} title="Download" onMouseEnter={e => e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={e => e.currentTarget.style.transform='scale(1)'}>
+                            <Download size={16} />
+                          </a>
+                        </div>
                       </div>
                     )}
 
