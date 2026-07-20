@@ -1,45 +1,29 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 
-// Public Pages
-import Home from './pages/Home'
-import Features from './pages/Features'
-import Pricing from './pages/Pricing'
-import Blog from './pages/Blog'
-import About from './pages/About'
-import Contact from './pages/Contact'
-
-// Auth Pages
-import Login from './pages/Login'
-
-// Protected App Pages
-import Dashboard from './pages/Dashboard'
-import TradeJournal from './pages/TradeJournal'
-import LiveCharts from './pages/LiveCharts'
+// Core App Pages
+import Introduction from './pages/Introduction'
+import UniversalSetup from './pages/UniversalSetup'
+import PracticeChart from './pages/PracticeChart'
+import DemoTrading from './pages/DemoTrading'
 import Settings from './pages/Settings'
-import Billing from './pages/Billing'
-import Mentor from './pages/Mentor'
-import UTSFramework from './pages/UTSFramework'
 
 // Components
-import ProtectedRoute from './components/ProtectedRoute'
 import AppNavbar from './components/AppNavbar'
 
-// Protected App Shell — wraps all logged-in pages
+// Main App Shell
 function AppShell() {
   const location = useLocation()
 
   // Derive activeTab from current URL path
   const pathToTab = {
-    '/dashboard': 'dashboard',
-    '/journal': 'journal',
-    '/charts': 'charts',
-    '/mentor': 'mentor',
-    '/uts': 'uts',
-    '/billing': 'billing',
+    '/': 'introduction',
+    '/setup': 'setup',
+    '/practice': 'practice',
+    '/demo': 'demo',
     '/settings': 'settings',
   }
-  const [activeTab, setActiveTab] = useState(pathToTab[location.pathname] || 'dashboard')
+  const [activeTab, setActiveTab] = useState(pathToTab[location.pathname] || 'introduction')
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-dark)' }}>
@@ -51,14 +35,17 @@ function AppShell() {
         display: 'flex',
         flexDirection: 'column'
       }}>
-        <div className="animate-fade-in" style={{ flex: 1 }}>
-          {activeTab === 'dashboard' && <Dashboard />}
-          {activeTab === 'journal' && <TradeJournal />}
-          {activeTab === 'charts' && <LiveCharts />}
-          {activeTab === 'mentor' && <Mentor />}
-          {activeTab === 'uts' && <UTSFramework />}
-          {activeTab === 'billing' && <Billing />}
-          {activeTab === 'settings' && <Settings />}
+        <div className="animate-fade-in" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Routes>
+            <Route path="/" element={<Introduction />} />
+            <Route path="/setup" element={<UniversalSetup />} />
+            <Route path="/practice" element={<PracticeChart />} />
+            <Route path="/demo" element={<DemoTrading />} />
+            <Route path="/settings" element={<Settings />} />
+            
+            {/* Catch-all */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </div>
       </main>
     </div>
@@ -68,96 +55,10 @@ function AppShell() {
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* ===== PUBLIC ROUTES ===== */}
-        <Route path="/" element={<Home />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-
-        {/* ===== AUTH ROUTES (already logged in? go to dashboard) ===== */}
-        <Route
-          path="/login"
-          element={
-            localStorage.getItem('token')
-              ? <Navigate to="/dashboard" replace />
-              : <Login />
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            localStorage.getItem('token')
-              ? <Navigate to="/dashboard" replace />
-              : <Login />
-          }
-        />
-
-        {/* ===== PROTECTED ROUTES ===== */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <AppShell />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/journal"
-          element={
-            <ProtectedRoute>
-              <AppShell />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/mentor"
-          element={
-            <ProtectedRoute>
-              <AppShell />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/charts"
-          element={
-            <ProtectedRoute>
-              <AppShell />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/uts"
-          element={
-            <ProtectedRoute>
-              <AppShell />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/billing"
-          element={
-            <ProtectedRoute>
-              <AppShell />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <AppShell />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Catch-all: unknown routes go to Home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <AppShell />
     </BrowserRouter>
   )
 }
 
 export default App
+

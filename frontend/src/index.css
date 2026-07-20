@@ -231,3 +231,62 @@ label {
   color: var(--danger);
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
+
+/* --- Responsive Utility Classes --- */
+
+/* Responsive Grid for DemoTrading */
+.demo-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr 280px;
+}
+
+/* Responsive Classes for Mentor */
+.mentor-container {
+  height: calc(100vh - 120px);
+}
+.mentor-chat-area {
+  padding: 30px;
+}
+.mentor-input-area {
+  padding: 20px 30px;
+}
+
+/* Public Navbar Mobile Classes */
+.public-nav-hamburger {
+  display: none;
+}
+.public-nav-desktop {
+  display: flex;
+}
+
+/* Global Media Queries for Mobile Responsiveness */
+@media (max-width: 1024px) {
+  .demo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .public-nav-desktop {
+    display: none !important;
+  }
+  .public-nav-hamburger {
+    display: block !important;
+  }
+  
+  .mentor-container {
+    height: calc(100vh - 80px);
+  }
+  .mentor-chat-area {
+    padding: 15px;
+  }
+  .mentor-input-area {
+    padding: 15px;
+  }
+  
+  /* Make sure headings scale down nicely on small devices */
+  h1 {
+    font-size: 1.8rem;
+  }
+}
+

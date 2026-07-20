@@ -1,24 +1,14 @@
-import { useNavigate } from 'react-router-dom'
 import { BrainCircuit } from 'lucide-react'
 
 const navItems = [
-  { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: '📊' },
-  { id: 'journal', path: '/journal', label: 'Trade History', icon: '📓' },
-  { id: 'charts', path: '/charts', label: 'Trading Terminal', icon: '📈' },
-  { id: 'mentor', path: '/mentor', label: 'AI Mentor', icon: '👨‍🏫' },
-  { id: 'uts', path: '/uts', label: 'UTS Framework', icon: '📐' },
-  { id: 'billing', path: '/billing', label: 'Billing', icon: '💳' },
-  { id: 'settings', path: '/settings', label: 'Settings', icon: '⚙️' },
+  { id: 'introduction', label: 'Introduction', icon: '🎯' },
+  { id: 'setup', label: 'Universal Setup', icon: '📐' },
+  { id: 'practice', label: 'Practice Chart', icon: '📝' },
+  { id: 'demo', label: 'Demo Trading', icon: '📈' },
+  { id: 'settings', label: 'Settings', icon: '⚙️' },
 ]
 
 export default function AppNavbar({ activeTab, onTabChange }) {
-  const navigate = useNavigate()
-
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    navigate('/')
-  }
-
   return (
     <header className="glass-panel" style={{
       position: 'sticky',
@@ -48,7 +38,7 @@ export default function AppNavbar({ activeTab, onTabChange }) {
           background: 'linear-gradient(to right, #fff, #94a3b8)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
         }}>
-          TradeLog AI
+          Trading Setup
         </span>
       </div>
 
@@ -82,7 +72,7 @@ export default function AppNavbar({ activeTab, onTabChange }) {
         })}
       </nav>
 
-      {/* Right: Status + Logout */}
+      {/* Right: Status */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <div style={{
           padding: '6px 12px',
@@ -92,20 +82,6 @@ export default function AppNavbar({ activeTab, onTabChange }) {
         }}>
           System Status: <span style={{ color: 'var(--success)' }}>● Online</span>
         </div>
-        <button
-          onClick={handleLogout}
-          className="btn outline"
-          style={{
-            padding: '6px 14px',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
-            color: 'var(--danger)',
-            fontSize: '0.8rem',
-            display: 'flex', alignItems: 'center', gap: '6px',
-            cursor: 'pointer'
-          }}
-        >
-          🚪 Log Out
-        </button>
       </div>
     </header>
   )

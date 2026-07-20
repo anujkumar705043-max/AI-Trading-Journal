@@ -532,8 +532,9 @@ function HeroSection({ t }) {
 
 
 // ── ROOT ──────────────────────────────────────────────────────────
-export default function UTSFramework() {
+export default function UniversalSetup() {
   const [lang, setLang] = useState('hi')
+  const [showAiExplain, setShowAiExplain] = useState(false)
   const t = T[lang]
   useScrollReveal()
 
@@ -545,7 +546,7 @@ export default function UTSFramework() {
         .uts-reveal.uts-in-view { opacity:1; transform:translateY(0); }
       `}</style>
 
-      <div style={{ fontFamily: lang === 'hi' ? "'Noto Sans Devanagari','Outfit',sans-serif" : "'IBM Plex Mono','Outfit',monospace", color: TEXT, background: 'transparent', maxWidth: '1080px', margin: '0 auto', paddingBottom: '80px' }}>
+      <div style={{ fontFamily: lang === 'hi' ? "'Noto Sans Devanagari','Outfit',sans-serif" : "'IBM Plex Mono','Outfit',monospace", color: TEXT, background: 'transparent', maxWidth: '1080px', margin: '0 auto', paddingBottom: '80px', width: '100%' }}>
 
         {/* Sub-nav with language toggle */}
         <div style={{ position: 'sticky', top: '70px', zIndex: 40, background: 'rgba(10,13,18,0.88)', backdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(237,239,242,0.09)', borderRadius: '0 0 16px 16px', marginBottom: '12px' }}>
@@ -563,11 +564,29 @@ export default function UTSFramework() {
               ))}
             </div>
 
-            {/* Right: Language Toggle */}
+            {/* Right: Language Toggle & AI Explain */}
+            <button
+              onClick={() => setShowAiExplain(!showAiExplain)}
+              style={{
+                marginLeft: '12px', flexShrink: 0,
+                fontFamily: "'IBM Plex Mono',monospace",
+                fontSize: '12px', fontWeight: 600,
+                padding: '6px 14px', borderRadius: '100px',
+                border: `1px solid #6366f1`,
+                background: showAiExplain ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.12)',
+                color: '#8b5cf6', cursor: 'pointer',
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap',
+                display: 'flex', alignItems: 'center', gap: '6px',
+              }}
+            >
+              <span>✨</span>
+              {showAiExplain ? 'Close AI' : 'Explain with AI'}
+            </button>
             <button
               onClick={() => setLang(l => l === 'en' ? 'hi' : 'en')}
               style={{
-                marginLeft: '12px', flexShrink: 0,
+                marginLeft: '6px', flexShrink: 0,
                 fontFamily: lang === 'hi' ? "'IBM Plex Mono',monospace" : "'Noto Sans Devanagari',sans-serif",
                 fontSize: '12px', fontWeight: 600,
                 padding: '6px 14px', borderRadius: '100px',
@@ -586,6 +605,36 @@ export default function UTSFramework() {
             </button>
           </div>
         </div>
+
+        {/* AI Explain Modal/Overlay Placeholder */}
+        {showAiExplain && (
+          <div style={{
+            margin: '0 20px 20px', padding: '20px',
+            background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))',
+            border: '1px solid rgba(139,92,246,0.3)',
+            borderRadius: '12px',
+            display: 'flex', flexDirection: 'column', gap: '10px'
+          }}>
+            <h3 style={{ margin: 0, color: '#a855f7', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>✨</span> AI Trading Mentor
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+              I can explain any concept on this page in your own language. What would you like to understand better?
+            </p>
+            <textarea 
+              placeholder="Ask me to explain a concept in your native language..."
+              style={{
+                background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+                color: 'white', padding: '12px', borderRadius: '8px', minHeight: '80px',
+                marginTop: '10px'
+              }}
+            />
+            <button style={{
+              alignSelf: 'flex-end', background: '#8b5cf6', color: 'white', 
+              border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer'
+            }}>Explain</button>
+          </div>
+        )}
 
         {/* Sections */}
         <HeroSection t={t} />
