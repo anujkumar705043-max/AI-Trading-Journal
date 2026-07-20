@@ -92,7 +92,7 @@ def analyze_chart_and_get_json(image_path: str):
             role="user",
             parts=[
                 types.Part.from_bytes(data=img_bytes, mime_type=mime_type),
-                types.Part.from_text("Analyze this chart and return the JSON annotation data.")
+                types.Part.from_text(text="Analyze this chart and return the JSON annotation data.")
             ]
         )
     ]
