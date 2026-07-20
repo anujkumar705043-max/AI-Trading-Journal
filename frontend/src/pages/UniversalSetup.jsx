@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import AIMentorPopup from '../components/AIMentorPopup'
 
 // ── Scroll reveal ───────────────────────────────────────────────────
 function useScrollReveal() {
@@ -574,32 +575,7 @@ export default function UniversalSetup() {
 
         {/* AI Explain Modal */}
         {showAiExplain && (
-          <div style={{
-            margin: '0 20px 20px', padding: '20px',
-            background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))',
-            border: '1px solid rgba(139,92,246,0.3)',
-            borderRadius: '12px',
-            display: 'flex', flexDirection: 'column', gap: '10px'
-          }}>
-            <h3 style={{ margin: 0, color: '#a855f7', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>✨</span> AI Trading Mentor
-            </h3>
-            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-              I can explain any concept on this page in your own language. What would you like to understand better?
-            </p>
-            <textarea 
-              placeholder="Ask me to explain a concept in your native language..."
-              style={{
-                background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                color: 'white', padding: '12px', borderRadius: '8px', minHeight: '80px',
-                marginTop: '10px'
-              }}
-            />
-            <button style={{
-              alignSelf: 'flex-end', background: '#8b5cf6', color: 'white', 
-              border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer'
-            }}>Explain</button>
-          </div>
+          <AIMentorPopup onClose={() => setShowAiExplain(false)} />
         )}
 
         {/* Sections rendered from T object dynamically */}
