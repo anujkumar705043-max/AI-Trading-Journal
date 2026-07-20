@@ -59,7 +59,7 @@ export default function PracticeChart() {
       }]);
     } catch (err) {
       console.error(err);
-      setMessages(prev => [...prev, { sender: 'mentor', text: "Failed to annotate chart." }]);
+      setMessages(prev => [...prev, { sender: 'mentor', text: `Failed to annotate chart. Reason: ${err.message}` }]);
     } finally {
       setIsAnnotating(false);
       setSendingChat(false);
