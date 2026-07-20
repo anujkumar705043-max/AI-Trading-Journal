@@ -639,6 +639,29 @@ def mentor_chat(data: MentorChatInput, current_user: dict = Depends(get_current_
         "reply": reply
     }
 
+from annotator import analyze_chart_and_get_json, draw_annotations
+
+class AnnotateInput(BaseModel):
+    image_filename: str
+
+@app.post("/mentor/annotate")
+def mentor_annotate(data: AnnotateInput, current_user: dict = Depends(get_current_user)):
+    image_path = os.path.join(UPLOAD_DIR, data.image_filename)
+    if not os.path.exists(image_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+        
+    try:
+        json_data = analyze_chart_and_get_json(image_path)
+        new_filename = draw_annotations(image_path, json_data)
+        return {
+            "status": "success",
+            "annotated_image": new_filename,
+            "raw_json": json_data
+        }
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # ============================================
 # Custom AI Mentor Configuration API

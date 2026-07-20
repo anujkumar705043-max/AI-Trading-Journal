@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Send, Image as ImageIcon, X, Mic, Square, Maximize, Minimize, Bot, Search } from 'lucide-react'
+import { Send, Image as ImageIcon, X, Mic, Square, Maximize, Minimize, Bot, Search, Brush } from 'lucide-react'
 
 export default function PracticeChart() {
   const container = useRef()
@@ -23,6 +23,49 @@ export default function PracticeChart() {
   const [uploadingAudio, setUploadingAudio] = useState(false)
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
+  
+  const [isAnnotating, setIsAnnotating] = useState(false)
+
+  const handleAnnotateImage = async () => {
+    if (!chatImageFilename || isAnnotating) return;
+    setIsAnnotating(true);
+    const token = localStorage.getItem('token');
+    
+    // Optimistically add message
+    const currentPreview = chatImagePreview;
+    const currentFilename = chatImageFilename;
+    setMessages(prev => [...prev, { sender: 'user', text: "Please annotate this chart.", imagePreview: currentPreview, imageFilename: currentFilename }]);
+    setChatImagePreview('');
+    setChatImageFilename('');
+    setSendingChat(true);
+
+    try {
+      const res = await fetch('https://ai-trading-journal-m373.onrender.com/mentor/annotate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ image_filename: currentFilename })
+      });
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.detail || 'Annotation failed');
+      
+      setMessages(prev => [...prev, { 
+        sender: 'mentor', 
+        text: "Here is your annotated chart based on SMC concepts:", 
+        imagePreview: `https://ai-trading-journal-m373.onrender.com/uploads/${data.annotated_image}`
+      }]);
+    } catch (err) {
+      console.error(err);
+      setMessages(prev => [...prev, { sender: 'mentor', text: "Failed to annotate chart." }]);
+    } finally {
+      setIsAnnotating(false);
+      setSendingChat(false);
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 
   useEffect(() => {
     setMessages([{ sender: 'mentor', text: "Hello! I am your AI Mentor. Ask me any doubts about the chart patterns you see here, or attach a screenshot/voice note." }])
@@ -384,9 +427,19 @@ export default function PracticeChart() {
               
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: (chatImagePreview || chatAudioFilename) ? '10px' : '0' }}>
                 {chatImagePreview && (
-                  <div style={{ position: 'relative' }}>
-                    <img src={chatImagePreview} alt="Preview" style={{ height: '60px', borderRadius: '4px', border: '1px solid var(--accent-color)' }} />
-                    <button onClick={() => { setChatImagePreview(''); setChatImageFilename('') }} style={{ position: 'absolute', top: -6, right: -6, background: 'var(--danger)', border: 'none', color: 'white', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><X size={10} /></button>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                    <div style={{ position: 'relative' }}>
+                      <img src={chatImagePreview} alt="Preview" style={{ height: '60px', borderRadius: '4px', border: '1px solid var(--accent-color)' }} />
+                      <button onClick={() => { setChatImagePreview(''); setChatImageFilename('') }} style={{ position: 'absolute', top: -6, right: -6, background: 'var(--danger)', border: 'none', color: 'white', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><X size={10} /></button>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={handleAnnotateImage} 
+                      disabled={isAnnotating || uploadingImage}
+                      style={{ height: '32px', padding: '0 10px', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(168, 85, 247, 0.2)', color: '#c084fc', border: '1px solid #c084fc', borderRadius: '6px', fontSize: '0.8rem', cursor: (isAnnotating || uploadingImage) ? 'not-allowed' : 'pointer', fontWeight: 'bold', alignSelf: 'center' }}>
+                      {isAnnotating ? <div className="spinner" style={{ width: '12px', height: '12px', borderWidth: '2px', borderTopColor: '#c084fc' }}></div> : <Brush size={14} />}
+                      AI Annotate
+                    </button>
                   </div>
                 )}
                 {chatAudioFilename && (
