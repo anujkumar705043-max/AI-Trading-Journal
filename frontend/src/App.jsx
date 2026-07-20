@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 
 // Core App Pages
 import Introduction from './pages/Introduction'
@@ -14,6 +14,7 @@ import AppNavbar from './components/AppNavbar'
 // Main App Shell
 function AppShell() {
   const location = useLocation()
+  const navigate = useNavigate()
 
   // Derive activeTab from current URL path
   const pathToTab = {
@@ -23,11 +24,28 @@ function AppShell() {
     '/demo': 'demo',
     '/settings': 'settings',
   }
+  
   const [activeTab, setActiveTab] = useState(pathToTab[location.pathname] || 'introduction')
+
+  useEffect(() => {
+    setActiveTab(pathToTab[location.pathname] || 'introduction')
+  }, [location.pathname])
+
+  const handleTabChange = (tabId) => {
+    const tabToPath = {
+      'introduction': '/',
+      'setup': '/setup',
+      'practice': '/practice',
+      'demo': '/demo',
+      'settings': '/settings',
+    }
+    setActiveTab(tabId)
+    navigate(tabToPath[tabId] || '/')
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-dark)' }}>
-      <AppNavbar activeTab={activeTab} onTabChange={setActiveTab} />
+      <AppNavbar activeTab={activeTab} onTabChange={handleTabChange} />
       <main style={{
         flex: 1,
         padding: '30px 40px',
