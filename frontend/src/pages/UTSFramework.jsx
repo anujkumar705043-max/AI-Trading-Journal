@@ -24,6 +24,10 @@ function useTabs(initial) {
 const BULL = '#34C795', BEAR = '#F2555A', GOLD = '#E8B24D'
 const MUTED = '#8B93A3', DIM = '#5B6472', TEXT = '#EDEFF2'
 
+// ── SVG props ──────────────────────────────────────────────────────
+const PP = { fill: 'none', stroke: TEXT, strokeWidth: 2, strokeLinejoin: 'round' }
+const LL = { stroke: GOLD, strokeWidth: 1.4, strokeDasharray: '6 5', opacity: 0.8 }
+
 // ── Style tokens ──────────────────────────────────────────────────
 const sec  = { padding: '72px 28px', borderBottom: '1px solid rgba(237,239,242,0.09)', position: 'relative' }
 const card = { background: 'rgba(17,21,29,0.7)', border: '1px solid rgba(237,239,242,0.09)', borderRadius: '14px', padding: '22px', backdropFilter: 'blur(8px)' }
@@ -43,7 +47,7 @@ const T = {
   en: {
     langBtn: 'हिंदी',
     navLabel: 'UTS',
-    nav: ['Battle','Framework','Flow','Structure','Footprint','Candle','SMC','Traps','Patterns','Setup','Risk','Mind','Roadmap'],
+    nav: ['Introduction','Price Action','SMC','Trap candles','Liquidity','Trap Trading','Big players moves','Institutional Dominance','Risk Management','News Trading'],
 
     heroEye: 'Field Notes - Mar 2017 to Apr 2025 - A personal trading framework',
     heroTitle1: 'The Universal', heroTitle2: 'Trading Setup',
@@ -96,9 +100,9 @@ const T = {
     structH2: 'Reading structure: HH/HL, LH/LL, and range',
     structLede: 'A swing high that gets revisited becomes resistance. A swing low that gets revisited becomes support. Everything else is just naming the sequence of these swings.',
     structCards: [
-      { title: 'UPTREND',   col: BULL, cap: 'Higher highs, higher lows. Demand consistently outruns supply.' },
-      { title: 'DOWNTREND', col: BEAR, cap: 'Lower highs, lower lows. Supply consistently outruns demand.' },
-      { title: 'SIDEWAYS',  col: GOLD, cap: 'A narrow or wide range while both sides decide. Undecided, not directionless.' },
+      { title: 'UPTREND',   col: BULL, points: '10,95 45,60 60,72 95,35 110,48 145,15 160,25 195,8',   cap: 'Higher highs, higher lows. Demand consistently outruns supply.' },
+      { title: 'DOWNTREND', col: BEAR, points: '10,15 45,50 60,38 95,75 110,62 145,95 160,85 195,102', cap: 'Lower highs, lower lows. Supply consistently outruns demand.' },
+      { title: 'SIDEWAYS',  col: GOLD, points: '10,55 40,25 70,85 100,25 130,85 160,25 190,85 210,55', cap: 'A narrow or wide range while both sides decide. Undecided, not directionless.' },
     ],
 
     footEye: '$footprint - size and liquidity',
@@ -209,7 +213,7 @@ const T = {
   hi: {
     langBtn: 'English',
     navLabel: 'UTS',
-    nav: ['Battle','Framework','Flow','Structure','Footprint','Candle','SMC','Traps','Patterns','Setup','Risk','Mind','Roadmap'],
+    nav: ['Introduction','Price Action','SMC','Trap candles','Liquidity','Trap Trading','Big players moves','Institutional Dominance','Risk Management','News Trading'],
 
     heroEye: 'Field Notes - March 2017 se April 2025 - Ek personal trading framework',
     heroTitle1: 'Universal', heroTitle2: 'Trading Setup',
@@ -262,9 +266,9 @@ const T = {
     structH2: 'Structure padhna: HH/HL, LH/LL, aur range',
     structLede: 'Ek swing high jo dobara visit hota hai resistance ban jaata hai. Ek swing low jo dobara visit hota hai support ban jaata hai. Baaki sab inhi swings ki sequence ka naam hai.',
     structCards: [
-      { title: 'UPTREND',   col: BULL, cap: 'Higher highs, higher lows. Demand lagaatar supply se aage.' },
-      { title: 'DOWNTREND', col: BEAR, cap: 'Lower highs, lower lows. Supply lagaatar demand se aage.' },
-      { title: 'SIDEWAYS',  col: GOLD, cap: 'Dono side decide kar rahi hain. Undecided hai, directionless nahi.' },
+      { title: 'UPTREND',   col: BULL, points: '10,95 45,60 60,72 95,35 110,48 145,15 160,25 195,8',   cap: 'Higher highs, higher lows. Demand lagaatar supply se aage.' },
+      { title: 'DOWNTREND', col: BEAR, points: '10,15 45,50 60,38 95,75 110,62 145,95 160,85 195,102', cap: 'Lower highs, lower lows. Supply lagaatar demand se aage.' },
+      { title: 'SIDEWAYS',  col: GOLD, points: '10,55 40,25 70,85 100,25 130,85 160,25 190,85 210,55', cap: 'Dono side decide kar rahi hain. Undecided hai, directionless nahi.' },
     ],
 
     footEye: '$footprint - size aur liquidity',
@@ -374,7 +378,7 @@ const T = {
 }
 
 // ── NAV ANCHOR IDS ────────────────────────────────────────────────
-const NAV_IDS = ['battle','framework','flow','structure','footprint','candle','smc','traps','patterns','setup','risk','mind','roadmap']
+const NAV_IDS = ['intro','price_action','smc','trap_candles','liquidity','trap_trading','big_players','inst_dom','risk_mgmt','news']
 
 // ── ATOMS ─────────────────────────────────────────────────────────
 function Eyebrow({ txt }) {
@@ -463,6 +467,53 @@ function HeroChart({ t }) {
   )
 }
 
+function EmptySection({ id, title }) {
+  return (
+    <section style={sec} id={id}>
+      <div style={{ marginBottom: '40px' }}>
+        <Eyebrow txt={'$' + id} />
+        <h2 style={h2s}>{title}</h2>
+        <p style={lede}>[Content placeholder for {title}]</p>
+      </div>
+      <Reveal>
+        <div style={{ ...diag, minHeight: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p style={{ color: DIM, fontFamily: "'IBM Plex Mono',monospace", fontSize: '13px' }}>Content to be added by user...</p>
+        </div>
+      </Reveal>
+    </section>
+  )
+}
+
+function IntroSection() { return <EmptySection id="intro" title="Introduction" /> }
+function PriceActionSection() { return <EmptySection id="price_action" title="Price Action" /> }
+function SMCSection() { return <EmptySection id="smc" title="SMC" /> }
+function TrapCandlesSection() { return <EmptySection id="trap_candles" title="Trap candles" /> }
+function LiquiditySection() { return <EmptySection id="liquidity" title="Liquidity" /> }
+function TrapTradingSection() {
+  return (
+    <section style={sec} id="trap_trading">
+      <div style={{ marginBottom: '40px' }}>
+        <Eyebrow txt="$trap_trading" />
+        <h2 style={h2s}>Trap Trading</h2>
+        <p style={lede}>[Content placeholder for Trap Trading]</p>
+      </div>
+      <Reveal>
+        <div style={{ ...diag, marginBottom: '20px' }}>
+          <h4 style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '13px', color: GOLD, marginBottom: '10px' }}>7.a. Manipulated Charts</h4>
+          <p style={cap}>[Content placeholder]</p>
+        </div>
+        <div style={diag}>
+          <h4 style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '13px', color: GOLD, marginBottom: '10px' }}>7.b. Position Conversion & Accumulation</h4>
+          <p style={cap}>[Content placeholder]</p>
+        </div>
+      </Reveal>
+    </section>
+  )
+}
+function BigPlayersSection() { return <EmptySection id="big_players" title="Big players moves" /> }
+function InstDominanceSection() { return <EmptySection id="inst_dom" title="Institutional Dominance" /> }
+function RiskManagementSection() { return <EmptySection id="risk_mgmt" title="Risk Management" /> }
+function NewsTradingSection() { return <EmptySection id="news" title="News Trading" /> }
 
 // ── ALL SECTIONS ──────────────────────────────────────────────────
 function HeroSection({ t }) {
@@ -478,32 +529,11 @@ function HeroSection({ t }) {
   )
 }
 
-function BasicSection({ t, id, eyeKey, h2Key, ledeKey, lede2Key, noteKey, customData }) {
-  return (
-    <section style={sec} id={id}>
-      <div style={{ marginBottom: '40px' }}>
-        <Eyebrow txt={t[eyeKey]} />
-        <h2 style={h2s}>{t[h2Key]}</h2>
-        <p style={lede}>{t[ledeKey]}</p>
-        {t[lede2Key] && <p style={{ ...lede, marginTop: '12px' }}>{t[lede2Key]}</p>}
-      </div>
-      
-      {customData && customData()}
-
-      {t[noteKey] && (
-        <Reveal>
-          <FieldNote>{t[noteKey]}</FieldNote>
-        </Reveal>
-      )}
-    </section>
-  )
-}
 
 
 // ── ROOT ──────────────────────────────────────────────────────────
-export default function UniversalSetup() {
+export default function UTSFramework() {
   const [lang, setLang] = useState('hi')
-  const [showAiExplain, setShowAiExplain] = useState(false)
   const t = T[lang]
   useScrollReveal()
 
@@ -515,11 +545,12 @@ export default function UniversalSetup() {
         .uts-reveal.uts-in-view { opacity:1; transform:translateY(0); }
       `}</style>
 
-      <div style={{ fontFamily: lang === 'hi' ? "'Noto Sans Devanagari','Outfit',sans-serif" : "'IBM Plex Mono','Outfit',monospace", color: TEXT, background: 'transparent', maxWidth: '1080px', margin: '0 auto', paddingBottom: '80px', width: '100%' }}>
+      <div style={{ fontFamily: lang === 'hi' ? "'Noto Sans Devanagari','Outfit',sans-serif" : "'IBM Plex Mono','Outfit',monospace", color: TEXT, background: 'transparent', maxWidth: '1080px', margin: '0 auto', paddingBottom: '80px' }}>
 
         {/* Sub-nav with language toggle */}
         <div style={{ position: 'sticky', top: '70px', zIndex: 40, background: 'rgba(10,13,18,0.88)', backdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(237,239,242,0.09)', borderRadius: '0 0 16px 16px', marginBottom: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', gap: '6px' }}>
+            {/* Left: brand + nav links */}
             <span style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '11px', color: GOLD, whiteSpace: 'nowrap', marginRight: '4px' }}>{t.navLabel}</span>
             <div style={{ display: 'flex', gap: '2px', overflowX: 'auto', scrollbarWidth: 'none', flex: 1 }}>
               {NAV_IDS.map((id, i) => (
@@ -532,29 +563,11 @@ export default function UniversalSetup() {
               ))}
             </div>
 
-            {/* AI Explain Toggle */}
-            <button
-              onClick={() => setShowAiExplain(!showAiExplain)}
-              style={{
-                marginLeft: '12px', flexShrink: 0,
-                fontFamily: "'IBM Plex Mono',monospace",
-                fontSize: '12px', fontWeight: 600,
-                padding: '6px 14px', borderRadius: '100px',
-                border: `1px solid #6366f1`,
-                background: showAiExplain ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.12)',
-                color: '#8b5cf6', cursor: 'pointer',
-                transition: 'all 0.2s',
-                whiteSpace: 'nowrap',
-                display: 'flex', alignItems: 'center', gap: '6px',
-              }}
-            >
-              <span>✨</span>
-              {showAiExplain ? 'Close AI' : 'Explain with AI'}
-            </button>
+            {/* Right: Language Toggle */}
             <button
               onClick={() => setLang(l => l === 'en' ? 'hi' : 'en')}
               style={{
-                marginLeft: '6px', flexShrink: 0,
+                marginLeft: '12px', flexShrink: 0,
                 fontFamily: lang === 'hi' ? "'IBM Plex Mono',monospace" : "'Noto Sans Devanagari',sans-serif",
                 fontSize: '12px', fontWeight: 600,
                 padding: '6px 14px', borderRadius: '100px',
@@ -565,6 +578,8 @@ export default function UniversalSetup() {
                 whiteSpace: 'nowrap',
                 display: 'flex', alignItems: 'center', gap: '6px',
               }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(232,178,77,0.25)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(232,178,77,0.12)'}
             >
               <span style={{ fontSize: '14px' }}>{lang === 'en' ? 'अ' : 'A'}</span>
               {t.langBtn}
@@ -572,236 +587,18 @@ export default function UniversalSetup() {
           </div>
         </div>
 
-        {/* AI Explain Modal */}
-        {showAiExplain && (
-          <div style={{
-            margin: '0 20px 20px', padding: '20px',
-            background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))',
-            border: '1px solid rgba(139,92,246,0.3)',
-            borderRadius: '12px',
-            display: 'flex', flexDirection: 'column', gap: '10px'
-          }}>
-            <h3 style={{ margin: 0, color: '#a855f7', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>✨</span> AI Trading Mentor
-            </h3>
-            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-              I can explain any concept on this page in your own language. What would you like to understand better?
-            </p>
-            <textarea 
-              placeholder="Ask me to explain a concept in your native language..."
-              style={{
-                background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-                color: 'white', padding: '12px', borderRadius: '8px', minHeight: '80px',
-                marginTop: '10px'
-              }}
-            />
-            <button style={{
-              alignSelf: 'flex-end', background: '#8b5cf6', color: 'white', 
-              border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer'
-            }}>Explain</button>
-          </div>
-        )}
-
-        {/* Sections rendered from T object dynamically */}
+        {/* Sections */}
         <HeroSection t={t} />
-        
-        <BasicSection t={t} id="battle" eyeKey="battleEye" h2Key="battleH2" ledeKey="battleLede" noteKey="battleNote" customData={() => (
-          <Reveal style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '32px' }}>
-            <div style={card}>
-              <div style={{ color: BEAR, fontFamily: "'IBM Plex Mono',monospace", fontSize: '11px', marginBottom: '12px' }}>{t.retailTag}</div>
-              <h3 style={{ margin: '0 0 16px', color: TEXT }}>{t.retailTitle}</h3>
-              <ul style={{ paddingLeft: '20px', margin: 0, color: MUTED, fontSize: '14px', lineHeight: 1.6 }}>
-                {t.retailItems.map((item, i) => <li key={i} style={{ marginBottom: '8px' }}>{item}</li>)}
-              </ul>
-            </div>
-            <div style={card}>
-              <div style={{ color: BULL, fontFamily: "'IBM Plex Mono',monospace", fontSize: '11px', marginBottom: '12px' }}>{t.bigTag}</div>
-              <h3 style={{ margin: '0 0 16px', color: TEXT }}>{t.bigTitle}</h3>
-              <ul style={{ paddingLeft: '20px', margin: 0, color: MUTED, fontSize: '14px', lineHeight: 1.6 }}>
-                {t.bigItems.map((item, i) => <li key={i} style={{ marginBottom: '8px' }}>{item}</li>)}
-              </ul>
-            </div>
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="framework" eyeKey="fwEye" h2Key="fwH2" ledeKey="fwLede" lede2Key="fwLede2" customData={() => (
-          <Reveal style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '32px' }}>
-            {t.pillars.map((p, i) => (
-              <div key={i} style={pillarBox}>
-                <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '24px', color: 'rgba(237,239,242,0.1)', fontWeight: 700 }}>{p.n}</div>
-                <h3 style={{ margin: '8px 0', fontSize: '16px', color: TEXT }}>{p.title}</h3>
-                <p style={{ color: MUTED, fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{p.desc}</p>
-              </div>
-            ))}
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="flow" eyeKey="flowEye" h2Key="flowH2" ledeKey="flowLede" customData={() => (
-          <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '32px' }}>
-            {t.flowRows.map((r, i) => (
-              <div key={i} style={flowRow}>
-                <div style={{ fontSize: '14px', color: TEXT }}>{r.lbl}</div>
-                <div style={{ fontFamily: "'IBM Plex Mono',monospace", color: r.col, fontSize: '16px', textAlign: 'center', fontWeight: 700 }}>{r.arrow}</div>
-                <div style={{ fontSize: '14px', color: r.col }}>{r.result} <span style={{ color: DIM }}>— {r.note}</span></div>
-              </div>
-            ))}
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="structure" eyeKey="structEye" h2Key="structH2" ledeKey="structLede" customData={() => (
-          <Reveal style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginTop: '32px' }}>
-            {t.structCards.map((c, i) => (
-              <div key={i} style={card}>
-                <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '12px', color: c.col, marginBottom: '16px', fontWeight: 600 }}>{c.title}</div>
-                <p style={{ color: MUTED, fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{c.cap}</p>
-              </div>
-            ))}
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="footprint" eyeKey="footEye" h2Key="footH2" ledeKey="footLede" lede2Key="footLede2" noteKey="footNote" customData={() => (
-          <Reveal style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '32px', marginBottom: '24px' }}>
-             <div style={card}>
-                <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '11px', color: MUTED, marginBottom: '8px' }}>{t.retailCard.tag}</div>
-                <div style={{ fontSize: '20px', color: TEXT, marginBottom: '8px' }}>{t.retailCard.qty}</div>
-                <p style={{ color: DIM, fontSize: '13px', margin: 0 }}>{t.retailCard.cap}</p>
-             </div>
-             <div style={card}>
-                <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '11px', color: GOLD, marginBottom: '8px' }}>{t.bigCard.tag}</div>
-                <div style={{ fontSize: '20px', color: TEXT, marginBottom: '8px' }}>{t.bigCard.qty}</div>
-                <p style={{ color: DIM, fontSize: '13px', margin: 0 }}>{t.bigCard.cap}</p>
-             </div>
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="candle" eyeKey="candleEye" h2Key="candleH2" ledeKey="candleLede" lede2Key="candleLede2" customData={() => (
-          <Reveal style={{ marginTop: '32px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
-              <div style={card}>
-                <h4 style={{ color: BULL, margin: '0 0 8px', fontSize: '14px' }}>{t.buyerTitle}</h4>
-                <p style={{ color: MUTED, fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{t.buyerCap}</p>
-              </div>
-              <div style={card}>
-                <h4 style={{ color: BEAR, margin: '0 0 8px', fontSize: '14px' }}>{t.sellerTitle}</h4>
-                <p style={{ color: MUTED, fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{t.sellerCap}</p>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              {t.ratios.map((r, i) => (
-                <div key={i} style={{ padding: '8px 16px', background: 'rgba(237,239,242,0.05)', borderRadius: '100px', fontSize: '12px', fontFamily: "'IBM Plex Mono',monospace", color: MUTED }}>
-                  {r}
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="smc" eyeKey="smcEye" h2Key="smcH2" ledeKey="smcLede" noteKey="smcNote" customData={() => (
-          <Reveal style={{ marginTop: '32px', marginBottom: '24px' }}>
-            <p style={{ color: MUTED, fontSize: '14px', lineHeight: 1.6, margin: '0 0 12px 0' }}>{t.smcCap}</p>
-            <p style={{ color: MUTED, fontSize: '14px', lineHeight: 1.6, margin: 0 }}>{t.smcCap2}</p>
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="traps" eyeKey="trapsEye" h2Key="trapsH2" ledeKey="trapsLede" customData={() => (
-          <Reveal style={{ marginTop: '32px' }}>
-            <TabSet 
-              tabs={t.trapTabs.map((lbl, i) => ({ id: `trap-${i}`, label: lbl }))}
-              panels={t.trapCaps.map((cap, i) => ({ id: `trap-${i}`, content: <div style={diag}><p style={{ color: TEXT, fontSize: '14px', lineHeight: 1.7, margin: 0 }}>{cap}</p></div> }))}
-            />
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="patterns" eyeKey="pattEye" h2Key="pattH2" ledeKey="pattLede" lede2Key="pattLede2" customData={() => (
-          <Reveal style={{ marginTop: '32px' }}>
-            <TabSet 
-              tabs={t.pattTabs.map((lbl, i) => ({ id: `patt-${i}`, label: lbl }))}
-              panels={[
-                { id: 'patt-0', content: <div style={diag}><p style={{ color: TEXT, fontSize: '14px', lineHeight: 1.7, margin: '0 0 12px 0' }}>{t.dtCaps[0]}</p><p style={{ color: TEXT, fontSize: '14px', lineHeight: 1.7, margin: 0 }}>{t.dtCaps[1]}</p></div> },
-                { id: 'patt-1', content: <div style={diag}><p style={{ color: TEXT, fontSize: '14px', lineHeight: 1.7, margin: '0 0 12px 0' }}>{t.hsCaps[0]}</p><p style={{ color: TEXT, fontSize: '14px', lineHeight: 1.7, margin: 0 }}>{t.hsCaps[1]}</p></div> },
-                { id: 'patt-2', content: <div style={diag}><p style={{ color: TEXT, fontSize: '14px', lineHeight: 1.7, margin: '0 0 12px 0' }}>{t.chCaps[0]}</p><p style={{ color: TEXT, fontSize: '14px', lineHeight: 1.7, margin: 0 }}>{t.chCaps[1]}</p></div> },
-              ]}
-            />
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="setup" eyeKey="setupEye" h2Key="setupH2" ledeKey="setupLede" noteKey="setupNote" customData={() => (
-          <Reveal style={{ marginTop: '32px', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
-              {t.setupSteps.map((s, i) => (
-                <div key={i} style={{ ...card, display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                  <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '16px', color: GOLD, fontWeight: 700, paddingTop: '2px' }}>{s.n}</div>
-                  <div>
-                    <h4 style={{ margin: '0 0 8px', color: TEXT, fontSize: '15px' }}>{s.title}</h4>
-                    <p style={{ margin: 0, color: MUTED, fontSize: '14px', lineHeight: 1.6 }}>{s.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={diag}>
-              <h4 style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '12px', color: GOLD, marginBottom: '12px' }}>{t.setupPCH}</h4>
-              <p style={{ color: MUTED, fontSize: '14px', lineHeight: 1.6, margin: 0 }}>{t.setupPCCap}</p>
-            </div>
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="risk" eyeKey="riskEye" h2Key="riskH2" ledeKey="riskLede" customData={() => (
-          <Reveal style={{ marginTop: '32px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '32px' }}>
-              {t.riskGroups.map((g, i) => (
-                <div key={i} style={card}>
-                  <h4 style={{ color: GOLD, margin: '0 0 16px', fontSize: '14px', fontFamily: "'IBM Plex Mono',monospace" }}>{g.title}</h4>
-                  <ul style={{ paddingLeft: '20px', margin: 0, color: TEXT, fontSize: '14px', lineHeight: 1.6 }}>
-                    {g.items.map((item, j) => <li key={j} style={{ marginBottom: '10px' }}>{item}</li>)}
-                  </ul>
-                </div>
-              ))}
-            </div>
-            <p style={{ color: DIM, fontSize: '12px', lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>{t.riskDisclaimer}</p>
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="mind" eyeKey="mindEye" h2Key="mindH2" ledeKey="mindLede" lede2Key="mindLede2" customData={() => (
-          <Reveal style={{ marginTop: '32px' }}>
-            <div style={{ ...diag, marginBottom: '32px' }}>
-              {t.routine.map((r, i) => (
-                <div key={i} style={{ display: 'flex', padding: '12px 0', borderBottom: i < t.routine.length - 1 ? '1px solid rgba(237,239,242,0.06)' : 'none' }}>
-                  <div style={{ width: '100px', fontFamily: "'IBM Plex Mono',monospace", fontSize: '13px', color: GOLD }}>{r.time}</div>
-                  <div style={{ color: TEXT, fontSize: '14px' }}>{r.what}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {t.quotes.map((q, i) => (
-                <div key={i} style={{ paddingLeft: '16px', borderLeft: `2px solid ${DIM}` }}>
-                  <p style={{ color: MUTED, fontSize: '15px', fontStyle: 'italic', margin: '0 0 8px 0' }}>"{q.q}"</p>
-                  <p style={{ color: DIM, fontSize: '12px', fontFamily: "'IBM Plex Mono',monospace", margin: 0 }}>— {q.d}</p>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        )} />
-        <BasicSection t={t} id="roadmap" eyeKey="roadEye" h2Key="roadH2" ledeKey="roadLede" customData={() => (
-          <Reveal style={{ marginTop: '32px' }}>
-            <div style={{ padding: '16px', background: 'rgba(232,178,77,0.08)', borderRadius: '8px', border: `1px solid rgba(232,178,77,0.2)`, color: GOLD, fontSize: '14px', marginBottom: '32px' }}>
-              <strong style={{ fontFamily: "'IBM Plex Mono',monospace" }}>6-8 MONTHS</strong> {t.roadBannerSub}
-            </div>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
-              <div style={card}>
-                <div style={{ color: BULL, fontFamily: "'IBM Plex Mono',monospace", fontSize: '11px', marginBottom: '16px' }}>{t.longLabel}</div>
-                <ul style={{ paddingLeft: '20px', margin: 0, color: MUTED, fontSize: '13px', lineHeight: 1.6 }}>
-                  {t.longTFs.map((tf, i) => <li key={i} style={{ marginBottom: '8px' }}>{tf}</li>)}
-                </ul>
-              </div>
-              <div style={card}>
-                <div style={{ color: BEAR, fontFamily: "'IBM Plex Mono',monospace", fontSize: '11px', marginBottom: '16px' }}>{t.shortLabel}</div>
-                <ul style={{ paddingLeft: '20px', margin: 0, color: MUTED, fontSize: '13px', lineHeight: 1.6 }}>
-                  {t.shortTFs.map((tf, i) => <li key={i} style={{ marginBottom: '8px' }}>{tf}</li>)}
-                </ul>
-              </div>
-            </div>
-
-            <div style={diag}>
-              <h4 style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: '12px', color: TEXT, marginBottom: '16px' }}>{t.bootLabel}</h4>
-              <ul style={{ paddingLeft: '20px', margin: '0 0 16px 0', color: MUTED, fontSize: '14px', lineHeight: 1.7 }}>
-                {t.bootRules.map((r, i) => <li key={i} style={{ marginBottom: '8px' }}>{r}</li>)}
-              </ul>
-              <div style={{ padding: '12px', background: 'rgba(17,21,29,0.5)', borderRadius: '6px', color: TEXT, fontSize: '14px', fontWeight: 500 }}>
-                {t.bootFinal}
-              </div>
-            </div>
-          </Reveal>
-        )} />
+        <IntroSection />
+        <PriceActionSection />
+        <SMCSection />
+        <TrapCandlesSection />
+        <LiquiditySection />
+        <TrapTradingSection />
+        <BigPlayersSection />
+        <InstDominanceSection />
+        <RiskManagementSection />
+        <NewsTradingSection />
 
         {/* Footer */}
         <footer style={{ padding: '72px 28px 48px', textAlign: 'center', borderTop: '1px solid rgba(237,239,242,0.09)' }}>
